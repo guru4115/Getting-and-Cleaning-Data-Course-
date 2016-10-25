@@ -2,6 +2,8 @@
 library(data.table)
 library(dplyr)
 library(tidyr)
+library(reshape2)
+
 
 ### Required Files are downloaded to Working directory and unzipped before starting
 path <- file.path(getwd(), "UCI HAR Dataset") ## get path to Dataset
@@ -34,9 +36,10 @@ merge_set <- bind_rows(train_set, test_set)
 merge_data <- bind_cols(merge_subject, merge_label, merge_set)
 
 ### order by subject and label
-merge_data <- merge_data[order(merge_subject, merge_label),]
 merge_data <- as.data.table(merge_data)
 setkey(merge_data, subject, activity)
+
+### Melt data
 merge_data <- data.table(melt(merge_data, key(merge_data), variable.name="variable"))
 
 
@@ -44,7 +47,8 @@ merge_data <- data.table(melt(merge_data, key(merge_data), variable.name="variab
 #####for each measurement
 
 ###### Read "features.text" file which contains List of all features.
-##### create character vector and rename merge_data column names
+##### rename merge_data2 column names
+### the value of variable is changed to match variable of merge_data so merging can be done
 
 features <- read.table(file.path(path, "features.txt"))
 names(features) <- c("variable", "features") # Rename column
@@ -58,7 +62,7 @@ subset_data <- merge_data2[grepl("subject|label|mean\\(\\)|std\\(\\)", merge_dat
 ###########Use descriptive activity names to name the activities in the data set
 ###### Read "activity_labels.txt" file which contains decription for label.
 activity_label <- read.table(file.path(path, "activity_labels.txt"))
-names(activity_label) <- c("activity", "activitiName")
+names(activity_label) <- c("activity", "activitiName")## rename column
 subset_data_description<- merge(subset_data, activity_label, by = "activity")
 
 
@@ -86,24 +90,21 @@ subset_data_description$acceleration <- factor(x %*% y, labels=c(NA, "body", "gr
 x <- matrix(c(f("mean()"), f("std()")), ncol=nrow(y))
 subset_data_description$variable <- factor(x %*% y, labels=c("mean", "std"))
 
-## Jerk and magnitude
+## Get Jerk and magnitude
 subset_data_description$jerk <- factor(f("Jerk"), labels=c(NA, "jerk"))
 subset_data_description$magnitude <- factor(f("Mag"), labels=c(NA, "magnitude"))
 
-## XYZ axis
+## Get XYZ axis
 y <- matrix(1:3, nrow=3)
 x <- matrix(c(f("-X"), f("-Y"), f("-Z")), ncol=nrow(y))
 subset_data_description$axis <- factor(x %*% y, labels=c(NA, "x", "y", "z"))
 
 ##### Rearrange collumn and remove unnecessary column
-finaldt <- select(subset_data_description, subject, activitiName, instrument, acceleration, magnitude, jerk, variable, value, -activity, -features)
-
-
-##ndependent tidy data set with the average of each variable for each activity and each subject.
+##independent tidy data set with the average of each variable for each activity and each subject.
 tidydata <-
-finaldt %>% 
+  subset_data_description %>% 
   group_by_(.dots=c("subject", "activitiName", "instrument", "acceleration", "magnitude", "jerk", "variable")) %>% 
   summarize(average=mean(value))  
-View(tidydata)
-#### create txt file
-write.table(tidydata, "cleaningDataProject.txt", row.names = FALSE)
+
+#### create txt file into working directory
+### write.table(tidydata, "cleaningDataProject.txt", row.names = FALSE)
