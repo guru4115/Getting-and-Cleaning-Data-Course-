@@ -1,0 +1,44 @@
+---
+title: "Readme"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+**Files in Repo and purpose**
+1. readme.md and readme.html - general instruction
+2. cleaningDataProject.txt - output tidy data
+3. codebook.md and codebook.html- explanation about run_analysis.R
+4. run_analysis.R - script for data analysis
+
+
+**Steps to run script**
+
+1. Download and unzip dataset into working directory from
+[Here](https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip)
+
+2. Run the file run_analysis.R
+
+**Variables list  and meaning**
+
+1. **subject**	-the subject who performed the activity 
+
+2. **activityName**	- Activity name (six types of activites:
+WALKING, WALKING_UPSTAIRS, WALKING_DOWNSTAIRS, SITTING, STANDING and LAYING )
+
+3. **Instrument** -	instrument used for measuruing
+
+4. **domain**	- Time domain signal or frequency domain signal 
+
+5. **acceleration**	- Acceleration signal 
+
+6. **variable**	- Mean or SD
+
+7. **jerk** - Jerk signal
+
+8. **magnitude**	Magnitude of the signals calculated using the Euclidean norm
+in the X, Y and Z directions 
+
+9. **average**	- Average of each variable(each column is a variable) for each activity and each subject
+
