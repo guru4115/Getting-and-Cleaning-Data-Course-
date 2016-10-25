@@ -1,6 +1,3 @@
-run_analysis <- function()
-{
-
 
 library(data.table)
 library(dplyr)
@@ -110,4 +107,3 @@ finaldt %>%
 View(tidydata)
 #### create txt file
 write.table(tidydata, "cleaningDataProject.txt", row.names = FALSE)
-}
